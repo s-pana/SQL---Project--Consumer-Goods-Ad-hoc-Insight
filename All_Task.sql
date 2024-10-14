@@ -21,7 +21,7 @@
    GROUP BY segment
    ORDER BY product_count DESC;
 
-4) Retrieve segment-wise product count difference between 2020 and 2021:
+#4) Retrieve segment-wise product count difference between 2020 and 2021:
    WITH p_count AS (
        SELECT p.segment,
               COUNT(DISTINCT CASE WHEN s.fiscal_year = 2020 THEN s.product_code END) AS product_count_2020,
@@ -35,7 +35,7 @@
    FROM p_count
    ORDER BY difference DESC;
 
-5) Retrieve products with the highest and lowest manufacturing cost:
+#5) Retrieve products with the highest and lowest manufacturing cost:
    SELECT p.product_code, p.product, m.manufacturing_cost
    FROM dim_product p
    JOIN fact_manufacturing_cost m ON p.product_code = m.product_code
@@ -43,7 +43,7 @@
       OR m.manufacturing_cost = (SELECT MIN(manufacturing_cost) FROM fact_manufacturing_cost)
    ORDER BY m.manufacturing_cost DESC;
 
-6) Retrieve the top 5 customers in India based on average pre-invoice discount percentage for 2021:
+#6) Retrieve the top 5 customers in India based on average pre-invoice discount percentage for 2021:
    WITH tbl1 AS (
        SELECT customer_code AS a, AVG(pre_invoice_discount_pct) AS b 
        FROM fact_pre_invoice_deductions
@@ -61,7 +61,7 @@
    ORDER BY average_discount_percentage
    LIMIT 5;
 
-7) Retrieve monthly gross sales amount for "Atliq Exclusive" in each fiscal year:
+#7) Retrieve monthly gross sales amount for "Atliq Exclusive" in each fiscal year:
    SELECT CONCAT(MONTHNAME(s.date), '(', YEAR(s.date), ')') AS 'month', s.fiscal_year,
           ROUND(SUM(s.sold_quantity * g.gross_price), 2) AS gross_sales_amount
    FROM fact_sales_monthly s
@@ -71,7 +71,7 @@
    GROUP BY month, s.fiscal_year
    ORDER BY s.fiscal_year;
 
-8) Retrieve quarterly total sold quantity for fiscal year 2020:
+#8) Retrieve quarterly total sold quantity for fiscal year 2020:
    SELECT CASE 
               WHEN MONTH(date) IN (9, 10, 11) THEN 'Q1'
               WHEN MONTH(date) IN (12, 1, 2) THEN 'Q2'
@@ -84,7 +84,7 @@
    GROUP BY quarter
    ORDER BY total_sold_quantity_in_millions DESC;
 
-9) Retrieve sales by channel and calculate its percentage contribution to total sales in 2021:
+#9) Retrieve sales by channel and calculate its percentage contribution to total sales in 2021:
    WITH tbl1 AS (
        SELECT c.channel, SUM(s.sold_quantity * g.gross_price) AS total_sales
        FROM fact_sales_monthly s
@@ -97,7 +97,7 @@
           ROUND(total_sales / SUM(total_sales) OVER () * 100, 2) AS percentage
    FROM tbl1;
 
-10) Retrieve top 3 products in each division with the highest total sold quantity in 2021:
+#10) Retrieve top 3 products in each division with the highest total sold quantity in 2021:
     WITH ranked_products AS (
         SELECT p.division, p.product, s.product_code,
                SUM(s.sold_quantity) AS total_sold_qty,
